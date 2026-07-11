@@ -1,0 +1,12 @@
+cloud_id       = "b1g000000000000000002"
+folder_id      = "b1g000000000000000002"
+zone           = "ru-central1-b"
+vm_name        = "stage-future20-vm"
+cores          = 4
+memory         = 4294967296    # 4 GB
+disk_size      = 21474836480   # 20 GB
+disk_type      = "network-ssd"
+subnet_id      = "e9b00000000000000002"
+ssh_public_key = "ssh-rsa AAAA...your-stage-public-key... stage@future20.com"
+image_id       = "fd8kdq6d0p8sij7h5qe3"
+platform_id    = "standard-v3"

@@ -1,0 +1,12 @@
+cloud_id       = "b1g000000000000000003"
+folder_id      = "b1g000000000000000003"
+zone           = "ru-central1-a"
+vm_name        = "prod-future20-vm"
+cores          = 8
+memory         = 8589934592    # 8 GB
+disk_size      = 53687091200   # 50 GB
+disk_type      = "network-ssd-nonreplicated"
+subnet_id      = "e9b00000000000000003"
+ssh_public_key = "ssh-rsa AAAA...your-prod-public-key... prod@future20.com"
+image_id       = "fd8kdq6d0p8sij7h5qe3"
+platform_id    = "standard-v3"
