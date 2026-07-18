@@ -1,0 +1,84 @@
+@startuml
+skinparam backgroundColor #FEFEFE
+skinparam legendBorderColor #000000
+skinparam legendBackgroundColor #FFFFFF
+
+title Event Storming — Система «Будущее 2.0»
+
+legend right
+  **Легенда элементов Event Storming:**
+  |= Цвет |= Тип элемента |= Описание |
+  | <#FFB3BA> | Domain Event | Бизнес-событие, опубликованное агрегатом |
+  | <#BAFFC9> | Command | Действие пользователя или системы |
+  | <#BAE1FF> | Aggregate | Корневая сущность домена |
+  | <#FFFFBA> | Policy | Бизнес-правило, реагирующее на событие |
+  | <#E8BAFF> | External System | Внешняя система (платёжный шлюз, email) |
+endlegend
+
+' Поток 1: Регистрация пациента
+rectangle "Patient Registration Flow" #F0F0F0 {
+    [User registers patient] as CMD1 <<Command>> #BAFFC9
+    [PatientRegistered] as EVT1 <<Domain Event>> #FFB3BA
+    [Patient Aggregate] as AGG1 <<Aggregate>> #BAE1FF
+    
+    CMD1 --> EVT1
+    EVT1 --> AGG1
+}
+
+' Поток 2: Создание договора
+rectangle "Contract Creation Flow" #F0F0F0 {
+    [Manager creates contract] as CMD2 <<Command>> #BAFFC9
+    [ContractCreated] as EVT2 <<Domain Event>> #FFB3BA
+    [Contract Aggregate] as AGG2 <<Aggregate>> #BAE1FF
+    
+    CMD2 --> EVT2
+    EVT2 --> AGG2
+}
+
+' Поток 3: Оплата
+rectangle "Payment Processing Flow" #F0F0F0 {
+    [Customer makes payment] as CMD3 <<Command>> #BAFFC9
+    [PaymentReceived] as EVT3 <<Domain Event>> #FFB3BA
+    [Invoice Aggregate] as AGG3 <<Aggregate>> #BAE1FF
+    [Payment Gateway] as EXT1 <<External System>> #E8BAFF
+    
+    CMD3 --> EVT3
+    EVT3 --> AGG3
+    AGG3 --> EXT1
+}
+
+' Поток 4: Исследование ИИ
+rectangle "AI Research Flow" #F0F0F0 {
+    [System runs AI analysis] as CMD4 <<Command>> #BAFFC9
+    [ResearchCompleted] as EVT4 <<Domain Event>> #FFB3BA
+    [Research Aggregate] as AGG4 <<Aggregate>> #BAE1FF
+    [AI Model] as EXT2 <<External System>> #E8BAFF
+    
+    CMD4 --> EVT4
+    EVT4 --> AGG4
+    AGG4 --> EXT2
+}
+
+' Политики и реакции на события
+rectangle "Business Policies" #FFFFBA {
+    [Send welcome email\nwhen patient registered] as POL1 <<Policy>>
+    [Generate invoice\nwhen contract created] as POL2 <<Policy>>
+    [Notify patient\nwhen research completed] as POL3 <<Policy>>
+    [Update analytics dashboard\non any event] as POL4 <<Policy>>
+}
+
+' Связи событий с политиками
+EVT1 --> POL1
+EVT2 --> POL2
+EVT4 --> POL3
+EVT1 --> POL4
+EVT2 --> POL4
+EVT3 --> POL4
+EVT4 --> POL4
+
+' Связи между потоками (eventual consistency)
+EVT1 -.-> EVT2 : Triggers
+EVT2 -.-> EVT3 : Triggers
+EVT4 -.-> POL3 : Triggers
+
+@enduml

@@ -1,0 +1,330 @@
+# ============================================================
+# Каталог доменных событий системы «Будущее 2.0»
+# Формат: YAML
+# Версия схемы: 1.0
+# ============================================================
+
+metadata:
+  title: "Domain Events Catalog"
+  version: "1.0.0"
+  last_updated: "2026-07-18"
+  description: "Полный каталог доменных событий с контрактами и подписчиками"
+  schema_version: "1.0"
+
+technical_requirements:
+  delivery_guarantee: "at-least-once"
+  idempotency: true
+  ordering: "timestamp-based per aggregate"
+  storage:
+    type: "Yandex Message Queue (Kafka-compatible)"
+    retention_years: 7
+    schema_registry: true
+  monitoring:
+    dead_letter_queue: true
+    alerting_delay_minutes: 5
+    metrics:
+      - event_count
+      - processing_time
+      - error_rate
+
+events:
+  - name: "PatientRegistered"
+    source_context: "Patient Domain"
+    source_aggregate: "Patient"
+    semantics: "Новый пациент успешно зарегистрирован в системе"
+    criticality: "high"
+    contract:
+      event_id: "uuid"
+      event_type: "PatientRegistered"
+      timestamp: "2026-07-18T10:30:00Z"
+      aggregate_id: "patient-uuid"
+      payload:
+        patient_id: "uuid"
+        email: "patient@example.com"
+        full_name: "Иван Иванов"
+        birth_date: "1990-01-01"
+        registration_source: "web|mobile|api"
+      metadata:
+        correlation_id: "uuid"
+        causation_id: "uuid"
+        user_id: "uuid"
+    subscribers:
+      - domain: "Contract Domain"
+        action: "Инициализация приветственного пакета"
+      - domain: "Notification Domain"
+        action: "Отправка welcome email"
+      - domain: "Analytics Domain"
+        action: "Обновление метрик регистраций"
+
+  - name: "ContractCreated"
+    source_context: "Contract Domain"
+    source_aggregate: "Contract"
+    semantics: "Новый договор создан и готов к подписанию"
+    criticality: "high"
+    contract:
+      event_id: "uuid"
+      event_type: "ContractCreated"
+      timestamp: "2026-07-18T11:00:00Z"
+      aggregate_id: "contract-uuid"
+      payload:
+        contract_id: "uuid"
+        patient_id: "uuid"
+        start_date: "2026-07-18"
+        end_date: "2027-07-18"
+        total_amount: 100000.00
+        currency: "RUB"
+        pricing_plan: "standard|premium|enterprise"
+      metadata:
+        correlation_id: "uuid"
+        causation_id: "uuid"
+        manager_id: "uuid"
+    subscribers:
+      - domain: "Billing Domain"
+        action: "Генерация первого счета"
+      - domain: "Notification Domain"
+        action: "Уведомление пациента о новом договоре"
+      - domain: "Analytics Domain"
+        action: "Обновление воронки продаж"
+
+  - name: "ContractSigned"
+    source_context: "Contract Domain"
+    source_aggregate: "Contract"
+    semantics: "Договор подписан всеми сторонами и вступил в силу"
+    criticality: "high"
+    contract:
+      event_id: "uuid"
+      event_type: "ContractSigned"
+      timestamp: "2026-07-18T14:30:00Z"
+      aggregate_id: "contract-uuid"
+      payload:
+        contract_id: "uuid"
+        patient_id: "uuid"
+        signed_at: "2026-07-18T14:30:00Z"
+        signature_method: "electronic|physical"
+        witness_id: "uuid"
+      metadata:
+        correlation_id: "uuid"
+        causation_id: "uuid"
+    subscribers:
+      - domain: "Research Domain"
+        action: "Активация доступа к исследованиям"
+      - domain: "Billing Domain"
+        action: "Активация автоматических платежей"
+      - domain: "Notification Domain"
+        action: "Подтверждение подписания"
+
+  - name: "PaymentReceived"
+    source_context: "Billing Domain"
+    source_aggregate: "Invoice"
+    semantics: "Оплата по счету успешно получена"
+    criticality: "high"
+    contract:
+      event_id: "uuid"
+      event_type: "PaymentReceived"
+      timestamp: "2026-07-18T15:00:00Z"
+      aggregate_id: "invoice-uuid"
+      payload:
+        invoice_id: "uuid"
+        contract_id: "uuid"
+        patient_id: "uuid"
+        amount: 50000.00
+        currency: "RUB"
+        payment_method: "card|bank_transfer|crypto"
+        transaction_id: "external-uuid"
+        received_at: "2026-07-18T15:00:00Z"
+      metadata:
+        correlation_id: "uuid"
+        causation_id: "uuid"
+        payment_gateway: "stripe|yandex_pay|other"
+    subscribers:
+      - domain: "Contract Domain"
+        action: "Обновление статуса платежей по договору"
+      - domain: "Notification Domain"
+        action: "Отправка чека пациенту"
+      - domain: "Analytics Domain"
+        action: "Обновление финансовых метрик"
+
+  - name: "ResearchStarted"
+    source_context: "Research Domain"
+    source_aggregate: "Research"
+    semantics: "Исследование с использованием ИИ запущено"
+    criticality: "medium"
+    contract:
+      event_id: "uuid"
+      event_type: "ResearchStarted"
+      timestamp: "2026-07-18T16:00:00Z"
+      aggregate_id: "research-uuid"
+      payload:
+        research_id: "uuid"
+        contract_id: "uuid"
+        patient_id: "uuid"
+        ai_model: "model-name-v1.0"
+        estimated_duration_minutes: 120
+        data_sources:
+          - "medical_history"
+          - "lab_results"
+          - "imaging"
+      metadata:
+        correlation_id: "uuid"
+        causation_id: "uuid"
+        initiated_by: "patient|doctor|system"
+    subscribers:
+      - domain: "Notification Domain"
+        action: "Уведомление о начале исследования"
+      - domain: "Analytics Domain"
+        action: "Отслеживание загрузки AI моделей"
+
+  - name: "ResearchCompleted"
+    source_context: "Research Domain"
+    source_aggregate: "Research"
+    semantics: "Исследование успешно завершено, результаты готовы"
+    criticality: "high"
+    contract:
+      event_id: "uuid"
+      event_type: "ResearchCompleted"
+      timestamp: "2026-07-18T18:00:00Z"
+      aggregate_id: "research-uuid"
+      payload:
+        research_id: "uuid"
+        contract_id: "uuid"
+        patient_id: "uuid"
+        started_at: "2026-07-18T16:00:00Z"
+        completed_at: "2026-07-18T18:00:00Z"
+        actual_duration_minutes: 120
+        ai_model: "model-name-v1.0"
+        results_summary:
+          confidence_score: 0.95
+          key_findings:
+            - "finding1"
+            - "finding2"
+          recommendations:
+            - "rec1"
+            - "rec2"
+        report_url: "https://storage.example.com/reports/uuid.pdf"
+      metadata:
+        correlation_id: "uuid"
+        causation_id: "uuid"
+        compute_resources_used: "gpu-hours: 2.5"
+    subscribers:
+      - domain: "Notification Domain"
+        action: "Уведомление пациента о готовности результатов"
+      - domain: "Analytics Domain"
+        action: "Обновление дашбордов эффективности ИИ"
+      - domain: "Billing Domain"
+        action: "Начисление стоимости исследования"
+
+  - name: "ResearchFailed"
+    source_context: "Research Domain"
+    source_aggregate: "Research"
+    semantics: "Исследование завершено с ошибкой"
+    criticality: "medium"
+    contract:
+      event_id: "uuid"
+      event_type: "ResearchFailed"
+      timestamp: "2026-07-18T17:30:00Z"
+      aggregate_id: "research-uuid"
+      payload:
+        research_id: "uuid"
+        contract_id: "uuid"
+        patient_id: "uuid"
+        failed_at: "2026-07-18T17:30:00Z"
+        error_code: "MODEL_TIMEOUT|DATA_INSUFFICIENT|SYSTEM_ERROR"
+        error_message: "Detailed error description"
+        retry_possible: true
+      metadata:
+        correlation_id: "uuid"
+        causation_id: "uuid"
+        stack_trace: "..."
+    subscribers:
+      - domain: "Notification Domain"
+        action: "Уведомление об ошибке"
+      - domain: "Analytics Domain"
+        action: "Логирование ошибок для улучшения моделей"
+
+  - name: "InvoiceGenerated"
+    source_context: "Billing Domain"
+    source_aggregate: "Invoice"
+    semantics: "Счет создан и отправлен пациенту"
+    criticality: "high"
+    contract:
+      event_id: "uuid"
+      event_type: "InvoiceGenerated"
+      timestamp: "2026-07-18T12:00:00Z"
+      aggregate_id: "invoice-uuid"
+      payload:
+        invoice_id: "uuid"
+        contract_id: "uuid"
+        patient_id: "uuid"
+        issue_date: "2026-07-18"
+        due_date: "2026-08-18"
+        total_amount: 50000.00
+        tax_amount: 10000.00
+        currency: "RUB"
+        line_items:
+          - description: "AI Research Service"
+            quantity: 1
+            unit_price: 50000.00
+            total: 50000.00
+      metadata:
+        correlation_id: "uuid"
+        causation_id: "uuid"
+        generated_by: "system|manual"
+    subscribers:
+      - domain: "Notification Domain"
+        action: "Отправка счета по email"
+      - domain: "Analytics Domain"
+        action: "Прогнозирование денежных потоков"
+
+  - name: "NotificationSent"
+    source_context: "Notification Domain"
+    source_aggregate: "Notification"
+    semantics: "Уведомление отправлено через выбранный канал"
+    criticality: "low"
+    contract:
+      event_id: "uuid"
+      event_type: "NotificationSent"
+      timestamp: "2026-07-18T12:05:00Z"
+      aggregate_id: "notification-uuid"
+      payload:
+        notification_id: "uuid"
+        recipient_id: "uuid"
+        channel: "email|sms|push"
+        template_id: "welcome_email_v1"
+        subject: "Добро пожаловать в Будущее 2.0!"
+        sent_at: "2026-07-18T12:05:00Z"
+      metadata:
+        correlation_id: "uuid"
+        causation_id: "uuid"
+        external_provider: "sendgrid|twilio"
+    subscribers:
+      - domain: "Analytics Domain"
+        action: "Отслеживание эффективности коммуникаций"
+
+  - name: "ReportGenerated"
+    source_context: "Analytics Domain"
+    source_aggregate: "Report"
+    semantics: "Аналитический отчет сгенерирован"
+    criticality: "low"
+    contract:
+      event_id: "uuid"
+      event_type: "ReportGenerated"
+      timestamp: "2026-07-18T20:00:00Z"
+      aggregate_id: "report-uuid"
+      payload:
+        report_id: "uuid"
+        title: "Monthly Research Efficiency Report"
+        period_start: "2026-06-01"
+        period_end: "2026-06-30"
+        data_sources:
+          - "researches"
+          - "payments"
+          - "patients"
+        report_url: "https://analytics.example.com/reports/uuid"
+        format: "pdf|excel|dashboard"
+      metadata:
+        correlation_id: "uuid"
+        causation_id: "uuid"
+        generated_by: "scheduled|manual"
+    subscribers:
+      - domain: "Notification Domain"
+        action: "Отправка отчета заинтересованным лицам"
