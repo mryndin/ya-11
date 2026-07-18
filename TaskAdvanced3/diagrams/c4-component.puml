@@ -1,0 +1,29 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+Container_Boundary(core_service, "Core Business Service") {
+    Component(controller, "REST Controller", "Go", "Прием и валидация HTTP-запросов")
+    Component(business_logic, "Business Logic Manager", "Go", "Ядро бизнес-правил и оркестрация")
+    Component(repository, "Data Access Layer (Repository)", "Go, GORM", "Взаимодействие с PostgreSQL")
+    Component(event_publisher, "Event Publisher", "Go", "Отправка событий в Message Broker")
+    
+    Component(acl, "Anti-Corruption Layer (ACL)", "Go", "Трансляция данных между новой и легаси моделями")
+    
+    System_Ext(primary_db, "Primary Database", "PostgreSQL")
+    System_Ext(message_broker, "Message Broker", "Yandex MQ")
+    System_Ext(legacy_erp, "Legacy ERP System", "Монолит")
+}
+
+Rel(controller, business_logic, "Вызывает методы")
+Rel(business_logic, repository, "Сохраняет/читает данные")
+Rel(business_logic, event_publisher, "Триггерит события")
+Rel(business_logic, acl, "Делегирует запросы к легаси")
+
+Rel(repository, primary_db, "JDBC/SQL")
+Rel(event_publisher, message_broker, "Publish (Async)")
+Rel(acl, legacy_erp, "REST/gRPC (Синхронно)")
+
+UpdateRelStyle(acl, legacy_erp, $lineColor="orange", $textColor="orange", $lineStyle="dashed")
+@enduml

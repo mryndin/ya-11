@@ -1,0 +1,77 @@
+# ========================================
+# Terraform
+# ========================================
+
+# ѕапка с плагинами и провайдерами
+.terraform/
+
+# ‘айл блокировки версий провайдеров
+.terraform.lock.hcl
+
+# ‘айлы состо€ни€ (ќЅя«ј“≈Ћ№Ќќ!)
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# ‘айлы переопределений
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Crash log
+crash.log
+crash.*.log
+
+# ========================================
+# —екреты и ключи (ќЅя«ј“≈Ћ№Ќќ!)
+# ========================================
+
+#  люч сервисного аккаунта Yandex Cloud
+key.json
+*.json
+
+# ‘айлы с переменными (содержат секреты)
+*.tfvars
+!*.tfvars.example
+
+# ========================================
+# Ћоги и отчЄты валидации
+# ========================================
+validation-log.txt
+validation-report.txt
+*.log
+
+# ========================================
+# ќ— и редакторы
+# ========================================
+
+# Windows
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# macOS
+.DS_Store
+._*
+
+# Linux
+*~
+
+# –едакторы
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ¬ременные файлы
+*.tmp
+*.bak
+
+# Terraform служебные папки и файлы
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+crash.log
+crash.*.log

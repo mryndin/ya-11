@@ -1,0 +1,73 @@
+# ========================================
+# Terraform — служебные файлы
+# ========================================
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+tfplan
+tfplan-*
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+crash.log
+crash.*.log
+
+# ========================================
+# Секреты и ключи (КРИТИЧНО!)
+# ========================================
+key.json
+sa-key.json
+*.pem
+*.p12
+*.pfx
+*.key
+backend.tfvars
+*.auto.tfvars
+
+# ========================================
+# Task2Advanced — специфичные файлы
+# ========================================
+scripts/validate-build-report.txt
+scripts/validate-build-log.txt
+scripts/lifecycle.json
+scripts/lifecycle-*.json
+
+# ========================================
+# Логи валидации (Task1Advanced)
+# ========================================
+validation-log.txt
+validation-report.txt
+task2-check-report.txt
+
+# ========================================
+# Переменные окружения
+# ========================================
+.env
+.env.local
+.env.*.local
+
+# ========================================
+# ОС и редакторы
+# ========================================
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+.DS_Store
+._*
+*~
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# Временные файлы
+*.tmp
+*.bak
+*.old

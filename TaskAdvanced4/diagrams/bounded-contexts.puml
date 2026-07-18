@@ -1,0 +1,81 @@
+@startuml
+skinparam backgroundColor #FEFEFE
+skinparam packageStyle rectangle
+skinparam legendBorderColor #000000
+skinparam legendBackgroundColor #FFFFFF
+
+title Bounded Contexts — Система «Будущее 2.0»
+
+package "Patient Domain\n(Домен пациентов)" #AED6F1 {
+    [Patient Aggregate] as PA
+    [Medical History] as MH
+    [Consent Management] as CM
+}
+
+package "Contract Domain\n(Домен договоров)" #A9DFBF {
+    [Contract Aggregate] as CA
+    [Terms & Conditions] as TC
+    [Pricing Engine] as PE
+}
+
+package "Research Domain\n(Домен исследований)" #F9E79F {
+    [Research Aggregate] as RA
+    [AI Model] as AI
+    [Data Pipeline] as DP
+}
+
+package "Billing Domain\n(Домен биллинга)" #F1948A {
+    [Invoice Aggregate] as IA
+    [Payment Gateway] as PG
+    [Subscription] as SUB
+}
+
+package "Notification Domain\n(Домен уведомлений)" #D2B4DE {
+    [Notification Aggregate] as NA
+    [Email Service] as ES
+    [SMS Service] as SMS
+}
+
+package "Analytics Domain\n(Домен аналитики)" #D5D8DC {
+    [Report Aggregate] as RPA
+    [Dashboard] as DB
+    [ML Pipeline] as MLP
+}
+
+' Связи между доменами через события
+PA --> CA : PatientRegistered
+CA --> IA : ContractCreated
+IA --> NA : PaymentReceived
+RA --> RPA : ResearchCompleted
+CA --> RA : ContractSigned
+
+' Внешние системы
+rectangle "Legacy ERP\n(Выводится)" #FADBD8 {
+    [Legacy System] as LS
+}
+
+LS --> PA : Миграция данных
+LS --> CA : Миграция договоров
+
+rectangle "External Systems" #FAD7A0 {
+    [Payment Provider] as PP
+    [Email Provider] as EP
+}
+
+IA --> PP : ProcessPayment
+NA --> EP : SendEmail
+
+legend right
+  **Легенда цветов доменов:**
+  |= Цвет |= Домен |= Ответственность |
+  | <#AED6F1> | Patient Domain | Пациенты, мед. записи, согласия |
+  | <#A9DFBF> | Contract Domain | Договоры, тарифы, подписания |
+  | <#F9E79F> | Research Domain | Исследования, AI-модели |
+  | <#F1948A> | Billing Domain | Счета, платежи, подписки |
+  | <#D2B4DE> | Notification Domain | Email, SMS, push-уведомления |
+  | <#D5D8DC> | Analytics Domain | Отчёты, дашборды, ML-пайплайны |
+  | <#FADBD8> | Legacy ERP | Устаревшая система (выводится) |
+  | <#FAD7A0> | External Systems | Платёжные и email-провайдеры |
+endlegend
+
+@enduml

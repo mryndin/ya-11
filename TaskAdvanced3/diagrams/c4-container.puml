@@ -1,0 +1,56 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+LAYOUT_TOP_DOWN()
+
+Person(user, "Клиент / Сотрудник", "Пользователь системы Future 2.0")
+Person(admin, "Администратор", "Управление системой и мониторинг")
+
+System_Boundary(future20, "Система «Будущее 2.0» (Целевая архитектура, 3 года)") {
+    Container(web_app, "Web-приложение", "React, TypeScript", "Основной интерфейс пользователя")
+    Container(mobile_app, "Мобильное приложение", "Flutter", "Доступ к услугам с мобильных устройств")
+    
+    Container(api_gateway, "API Gateway", "Kong / Yandex API Gateway", "Маршрутизация, аутентификация, rate limiting")
+    
+    Container(user_service, "User Service", "Go, PostgreSQL", "Управление профилями и аутентификация")
+    Container(core_service, "Core Business Service", "Go, PostgreSQL", "Основная бизнес-логика и транзакции")
+    Container(new_venture_service, "New Venture Service", "Python, PostgreSQL", "Новое бизнес-направление (AI/Аналитика)")
+    
+    ContainerDb(primary_db, "Primary Database", "Yandex Managed PostgreSQL", "Основное хранилище данных")
+    ContainerDb(cache_db, "Cache", "Yandex Managed Redis", "Кэширование частых запросов")
+    ContainerDb(storage, "Object Storage", "Yandex Object Storage (S3)", "Хранение документов и state файлов")
+    
+    ContainerQueue(message_broker, "Message Broker", "Yandex Message Queue (Kafka-compatible)", "Асинхронная обработка событий")
+    
+    Container(observability, "Observability Stack", "Prometheus + Grafana + Loki", "Мониторинг, метрики и логи")
+    
+    System_Ext(legacy_erp, "Legacy ERP System", "Монолит (PHP/Java)", "Устаревшая система, планируется к выводу из эксплуатации")
+    System_Ext(ext_data, "Внешние источники данных", "3rd Party APIs", "Новые интеграции (платежи, аналитика)")
+}
+
+Rel(user, web_app, "Использует через HTTPS")
+Rel(user, mobile_app, "Использует через HTTPS")
+Rel(admin, observability, "Мониторит через HTTPS")
+
+Rel(web_app, api_gateway, "REST API")
+Rel(mobile_app, api_gateway, "REST API")
+
+Rel(api_gateway, user_service, "Маршрутизирует запросы")
+Rel(api_gateway, core_service, "Маршрутизирует запросы")
+Rel(api_gateway, new_venture_service, "Маршрутизирует запросы")
+
+Rel(core_service, primary_db, "Чтение/Запись")
+Rel(user_service, primary_db, "Чтение/Запись")
+Rel(new_venture_service, primary_db, "Чтение/Запись")
+Rel(core_service, cache_db, "Кэширование")
+Rel(core_service, storage, "Сохранение артефактов")
+
+Rel(core_service, message_broker, "Публикация событий")
+Rel(new_venture_service, message_broker, "Подписка на события")
+
+Rel(core_service, legacy_erp, "Синхронизация через Anti-Corruption Layer (ACL)", "Пока легаси активно")
+Rel(new_venture_service, ext_data, "Загрузка внешних данных")
+
+UpdateRelStyle(core_service, legacy_erp, $lineColor="red", $textColor="red", $lineStyle="dashed")
+@enduml
