@@ -1,0 +1,29 @@
+# Terraform state и служебные папки
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+tfplan
+
+# —екреты и ключи (ќЅя«ј“≈Ћ№Ќќ!)
+key.json
+sa-key.json
+*.pem
+*.p12
+
+# Ћокальные конфиги бэкенда (если решите использовать backend.tfvars)
+backend.tfvars
+*.auto.tfvars
+
+# Ћоги
+*.log
+validation-log.txt
+validation-report.txt
+
+# ќ— и редакторы
+Thumbs.db
+Desktop.ini
+.DS_Store
+.vscode/
+.idea/

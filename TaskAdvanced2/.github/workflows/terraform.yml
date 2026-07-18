@@ -1,0 +1,82 @@
+name: Terraform CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'plan'
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+
+env:
+  TF_VERSION: '1.5.7'
+  TF_VAR_service_account_key_file: './sa-key.json'
+
+jobs:
+  terraform:
+    name: Terraform ${{ github.event.inputs.action || 'plan' }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref == 'refs/heads/main' && 'dev' || 'dev' }} # Можно добавить stage/prod
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      
+      - name: Create Service Account Key File
+        run: echo '${{ secrets.YC_SA_KEY_JSON }}' > ./sa-key.json
+        working-directory: envs/dev
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="access_key=${{ secrets.YC_STORAGE_ACCESS_KEY }}" \
+            -backend-config="secret_key=${{ secrets.YC_STORAGE_SECRET_KEY }}"
+        working-directory: envs/dev
+      
+      - name: Terraform Validate & Format
+        run: |
+          terraform fmt -check -recursive
+          terraform validate
+        working-directory: envs/dev
+
+      - name: Terraform Plan
+        if: github.event.inputs.action == 'plan' || github.event_name == 'pull_request'
+        run: |
+          terraform plan \
+            -var-file="dev.tfvars" \
+            -input=false \
+            -no-color \
+            -out=tfplan
+        working-directory: envs/dev
+
+      - name: Terraform Apply
+        if: github.event.inputs.action == 'apply' || (github.ref == 'refs/heads/main' && github.event_name == 'push')
+        run: |
+          terraform apply \
+            -var-file="dev.tfvars" \
+            -auto-approve \
+            -input=false
+        working-directory: envs/dev
+
+      - name: Terraform Destroy
+        if: github.event.inputs.action == 'destroy'
+        run: |
+          terraform destroy \
+            -var-file="dev.tfvars" \
+            -auto-approve \
+            -input=false
+        working-directory: envs/dev
