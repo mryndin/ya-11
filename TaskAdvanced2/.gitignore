@@ -1,29 +1,73 @@
-# Terraform state и служебные папки
+# ========================================
+# Terraform Ч служебные файлы
+# ========================================
 .terraform/
 .terraform.lock.hcl
 *.tfstate
 *.tfstate.*
 *.tfstate.backup
 tfplan
+tfplan-*
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+crash.log
+crash.*.log
 
-# —екреты и ключи (ќЅя«ј“≈Ћ№Ќќ!)
+# ========================================
+# —екреты и ключи ( –»“»„Ќќ!)
+# ========================================
 key.json
 sa-key.json
 *.pem
 *.p12
-
-# Ћокальные конфиги бэкенда (если решите использовать backend.tfvars)
+*.pfx
+*.key
 backend.tfvars
 *.auto.tfvars
 
-# Ћоги
-*.log
+# ========================================
+# Task2Advanced Ч специфичные файлы
+# ========================================
+scripts/validate-build-report.txt
+scripts/validate-build-log.txt
+scripts/lifecycle.json
+scripts/lifecycle-*.json
+
+# ========================================
+# Ћоги валидации (Task1Advanced)
+# ========================================
 validation-log.txt
 validation-report.txt
+task2-check-report.txt
 
+# ========================================
+# ѕеременные окружени€
+# ========================================
+.env
+.env.local
+.env.*.local
+
+# ========================================
 # ќ— и редакторы
+# ========================================
 Thumbs.db
 Desktop.ini
+ehthumbs.db
 .DS_Store
+._*
+*~
+
+# IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# ¬ременные файлы
+*.tmp
+*.bak
+*.old

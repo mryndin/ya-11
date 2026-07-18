@@ -18,7 +18,8 @@ Task2Advanced/
 │   ├── variables.tf
 │   └── dev.tfvars
 ├── scripts/
-│   └── init-backend.bat     # CMD-скрипт создания бакета
+│   ├── init-backend.bat     # CMD-скрипт создания бакета
+│   └── validate-build.bat   # CMD-скрипт проверки сборки
 ├── .github/workflows/
 │   └── terraform.yml        # CI/CD pipeline с approval
 ├── .gitignore               # Защита от утечки секретов
@@ -39,7 +40,15 @@ cd Task2Advanced
 scripts\init-backend.bat
 ```
 
-### 3. Локальный запуск Terraform
+### 3. Локальная проверка
+Выполните скрипт для проверки локально:
+```cmd
+cd Task2Advanced
+scripts\validate-build.bat
+```
+
+
+### 4. Локальный запуск Terraform
 ```cmd
 cd envs\dev
 terraform init -backend-config="access_key=aje72fn32mvs0kitq931" -backend-config="secret_key=<ваш_private_key_из_key.json>"
@@ -64,7 +73,6 @@ terraform apply -var-file="dev.tfvars"
 - ✅ Файлы `.tfstate`, `.terraform/` и `key.json` добавлены в `.gitignore`.
 - ✅ Pipeline использует GitHub Secrets для аутентификации, ключи не захардкожены.
 - ✅ Применяется принцип изоляции окружений через отдельные ключи в бакете (`key = "dev/terraform.tfstate"`).
-```
 
 ---
 
